@@ -94,7 +94,6 @@ class LoginController extends Controller
      */
     protected function authenticated(Request $request, $user)
     {
-        //create access-token for device.
         return $user;
     }
 

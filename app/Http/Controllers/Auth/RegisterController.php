@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\User;
-use Illuminate\Support\Str;
+use Mail;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Hash;
@@ -31,7 +31,7 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/login';
+    protected $redirectTo = '';
 
     /**
      * Create a new controller instance.
@@ -102,28 +102,13 @@ class RegisterController extends Controller
      */
     protected function registered(Request $request, $user)
     {
-        return $this->update_email_token($user) ? redirect($this->redirectTo) : response()->json([
-            'message' => 'Registration failed due to Internal Server Error',
-        ]);
-    }
+        $user->update_email_token();
 
-    /**
-     * Update the user email-token
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  mixed  $user
-     * @return mixed
-     */
-    protected function update_email_token($user)
-    {
-        $email_token = Str::random(60);
-
-        if($user) {
-            $user->forceFill([
-                'email_token' => Hash::make($email_token)
-            ])->save();
-
-            return $email_token;
+        if(!$user->hasVerifiedEmail()){            
+            return view('/auth.verify');
         }
-    }
+
+        return redirect('/login');
+    }    
+
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePasswordResetsTable extends Migration
+class AddEmailSendAtToUsers extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,8 @@ class CreatePasswordResetsTable extends Migration
      */
     public function up()
     {
-        Schema::create('password_resets', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('email')->index();
-            $table->string('token');
-            $table->timestamp('created_at')->nullable();
+        Schema::table('users', function (Blueprint $table) {
+            $table->timestamp('email_send_at')->nullable();
         });
     }
 
@@ -28,6 +25,8 @@ class CreatePasswordResetsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('password_resets');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('email_send_at');
+        });
     }
 }
